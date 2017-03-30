@@ -108,3 +108,4 @@ gulp.task('coverage', ['unit-test'], () => gulp.src('specs/*.js')
     }));
 
 gulp.task('default', ['minify', 'watch']);
+
