@@ -101,7 +101,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
   };
 
   $scope.doSearch = () => {
-    if (!($scope.bookToSearch)) return iDex.feedback('Select an indexed book before search');
+    if (!($scope.bookToSearch)) return Utility.feedback('Select an indexed book before search');
     const searchToken = $scope.searchToken;
     const searchTokens = iDex.tokenize(searchToken);
     const bookToSearch = $scope.bookToSearch;
