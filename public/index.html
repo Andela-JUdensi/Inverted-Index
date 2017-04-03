@@ -110,7 +110,7 @@
                   <tr>
                     <th>#</th>
                     <th> Tokens </th>
-                    <th ng-repeat="document in numberOfDocuments[selectedBook]">Document {{ document + 1 }}</th>
+                    <th ng-repeat="title in indexedBookTitles[selectedBook] track by $index">{{ title }}</th>
                   </tr>
                 </thead>
                 <tr ng-repeat="(token, docPosition) in iiScopeHolder"> 
@@ -134,7 +134,7 @@
                   <tr>
                     <th>#</th>
                     <th> Token </th>
-                    <th ng-repeat="document in numberOfDocuments[bookname]">Document {{ document + 1 }}</th>
+                    <th ng-repeat="title in indexedBookTitles[bookname] track by $index">Document {{ title }}</th>
                   </tr>
                 </thead>
 
