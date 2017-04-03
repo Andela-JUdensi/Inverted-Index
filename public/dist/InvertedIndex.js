@@ -1,5 +1,4 @@
 'use strict';
-
 /**
  * Class representing InvertedIndex
  */
@@ -22,6 +21,7 @@ var InvertedIndex = function () {
     this.iDexMapper = {};
     this.numberOfDocuments = {};
     this.unIndexedBooks = {};
+    this.indexedBookTitles = {};
   }
 
   /**
@@ -33,62 +33,14 @@ var InvertedIndex = function () {
 
 
   _createClass(InvertedIndex, [{
-    key: 'readFile',
-    value: function readFile(book) {
-      try {
-        return JSON.parse(book);
-      } catch (error) {
-        return false;
+    key: 'setBookTitles',
+    value: function setBookTitles(bookname, title) {
+      if (this.indexedBookTitles[bookname]) {
+        this.indexedBookTitles[bookname].push(title);
+      } else {
+        this.indexedBookTitles[bookname] = [];
+        this.indexedBookTitles[bookname].push(title);
       }
-    }
-
-    /**
-     * Ensures all the documents in a particular file is valid
-     * @param {array} allBooks - Array containing document objects of bookname
-     * @param {string} bookname - Name of the book to validate
-     * @return {Promise.<bookHolder>} An Object containing validated book
-     */
-
-  }, {
-    key: 'validateFile',
-    value: function validateFile(allBooks, bookname) {
-      return new Promise(function (resolve, reject) {
-        if (Object.keys(allBooks).length < 1) {
-          reject('Cannot index an empty object');
-        } else {
-          bookname = bookname.split('.')[0];
-          var bookHolder = _defineProperty({}, bookname, {});
-          allBooks.map(function (eachBook, eachIndex) {
-            if (Object.prototype.hasOwnProperty.call(eachBook, 'title') && Object.prototype.hasOwnProperty.call(eachBook, 'text')) {
-              if (eachBook.title.length < 1 || eachBook.text.length < 1) {
-                reject('Document ' + (parseInt(eachIndex, 10) + 1) + ' have an empty title or text.');
-              }
-              bookHolder[bookname][eachIndex] = {
-                title: eachBook.title.toLowerCase(),
-                text: eachBook.text.toLowerCase()
-              };
-            } else {
-              reject('Document ' + (parseInt(eachIndex, 10) + 1) + ' in ' + bookname + '.json book do not have a "title" or "text" fields');
-            }
-          });
-          resolve(bookHolder);
-        }
-      });
-    }
-
-    /**
-    * Strips out special characters from documents to be indexed
-    * @param {String} text - contents of each document
-    * @return {String} sanitizedText - sanitized contents of each document
-    */
-
-  }, {
-    key: 'tokenize',
-    value: function tokenize(text) {
-      var sanitizedText = text.replace(/[^\w\s]+/gi, '');
-      sanitizedText = sanitizedText.replace(/\s\s+/g, ' ');
-      sanitizedText = sanitizedText.replace(/^[.\s]+|[.\s]+$/g, '');
-      return sanitizedText.toLowerCase();
     }
 
     /**
@@ -99,13 +51,14 @@ var InvertedIndex = function () {
 
   }, {
     key: 'createsArray',
-    value: function createsArray(book) {
+    value: function createsArray(bookname, book) {
       var _this = this;
 
       var bookContents = [];
       Object.keys(book).map(function (documentPosition) {
-        var mergedTitleAndText = book[documentPosition].title + ' ' + book[documentPosition].text;
-        bookContents.push(_this.tokenize(mergedTitleAndText).split(' '));
+        var mergedTitleAndText = book[documentPosition].title + ' \n      ' + book[documentPosition].text;
+        bookContents.push(InvertedIndex.tokenize(mergedTitleAndText).split(' '));
+        _this.setBookTitles(bookname, book[documentPosition].title);
       });
       return bookContents;
     }
@@ -124,12 +77,12 @@ var InvertedIndex = function () {
 
       var tokenIndex = {};
       this.numberOfDocuments[bookname] = [];
-      var bookContents = this.createsArray(book);
+      var bookContents = this.createsArray(bookname, book);
       return new Promise(function (resolve) {
-        bookContents.map(function (eachEdocument, documentPosition) {
+        bookContents.map(function (eachdocument, documentPosition) {
           var documentPositionToInt = parseInt(documentPosition, 10);
           _this2.numberOfDocuments[bookname].push(documentPositionToInt);
-          eachEdocument.map(function (eachWord) {
+          eachdocument.map(function (eachWord) {
             if (tokenIndex[eachWord]) {
               if (tokenIndex[eachWord].indexOf(documentPositionToInt) === -1) {
                 tokenIndex[eachWord].push(documentPositionToInt);
@@ -204,6 +157,66 @@ var InvertedIndex = function () {
         searchResult[bookname][word] = allBooks[bookname][word] || [];
       });
       return searchResult;
+    }
+  }], [{
+    key: 'readFile',
+    value: function readFile(book) {
+      try {
+        return JSON.parse(book);
+      } catch (error) {
+        return false;
+      }
+    }
+
+    /**
+     * Ensures all the documents in a particular file is valid
+     * @param {array} allBooks - Array containing document objects of bookname
+     * @param {string} bookname - Name of the book to validate
+     * @return {Promise.<bookHolder>} An Object containing validated book
+     */
+
+  }, {
+    key: 'validateFile',
+    value: function validateFile(allBooks, bookname) {
+      return new Promise(function (resolve, reject) {
+        if (Object.keys(allBooks).length < 1) {
+          reject('Cannot index an empty object');
+        } else {
+          bookname = bookname.split('.')[0];
+          var bookHolder = _defineProperty({}, bookname, {});
+          allBooks.map(function (eachBook, eachIndex) {
+            if (Object.prototype.hasOwnProperty.call(eachBook, 'title') && Object.prototype.hasOwnProperty.call(eachBook, 'text')) {
+              if (eachBook.title.length < 1 || eachBook.text.length < 1) {
+                var index = parseInt(eachIndex, 10) + 1;
+                reject('Document ' + index + ' have an empty title or text.');
+              }
+              bookHolder[bookname][eachIndex] = {
+                title: eachBook.title.toLowerCase(),
+                text: eachBook.text.toLowerCase()
+              };
+            } else {
+              var _index = parseInt(eachIndex, 10) + 1;
+              reject('No \'title\' or \'text\' in Document ' + _index + ' of ' + bookname);
+            }
+          });
+          resolve(bookHolder);
+        }
+      });
+    }
+
+    /**
+    * Strips out special characters from documents to be indexed
+    * @param {String} text - contents of each document
+    * @return {String} sanitizedText - sanitized contents of each document
+    */
+
+  }, {
+    key: 'tokenize',
+    value: function tokenize(text) {
+      var sanitizedText = text.replace(/[^\w\s]+/gi, '');
+      sanitizedText = sanitizedText.replace(/\s\s+/g, ' ');
+      sanitizedText = sanitizedText.replace(/^[.\s]+|[.\s]+$/g, '');
+      return sanitizedText.toLowerCase();
     }
   }]);
 

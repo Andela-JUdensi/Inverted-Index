@@ -5,6 +5,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
   $scope.iiScopeHolder = {};
   $scope.numberOfDocuments = iDex.numberOfDocuments;
   $scope.books = iDex.unIndexedBooks;
+  $scope.indexedBookTitles = iDex.indexedBookTitles;
   $scope.showIndexes = false;
   $scope.showSearches = false;
 
@@ -57,8 +58,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
       bookReader.onload = (() => (readerObj) => {
         try {
           const bookname = book.name;
-          const allBooks = iDex.readFile(readerObj.target.result);
-          iDex.validateFile(allBooks, bookname)
+          const allBooks = InvertedIndex.readFile(readerObj.target.result);
+          InvertedIndex.validateFile(allBooks, bookname)
             .then(bookHolder => resolve(bookHolder))
             .catch(error => reject('This is not a valid json file\n Please get one with a vaild title and text properties'));
         } catch (error) {
@@ -101,9 +102,9 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
   };
 
   $scope.doSearch = () => {
-    if (!($scope.bookToSearch)) return iDex.feedback('Select an indexed book before search');
+    if (!($scope.bookToSearch)) return Utility.feedback('Select an indexed book before search');
     const searchToken = $scope.searchToken;
-    const searchTokens = iDex.tokenize(searchToken);
+    const searchTokens = InvertedIndex.tokenize(searchToken);
     const bookToSearch = $scope.bookToSearch;
 
     $scope.showSearches = true;
@@ -150,6 +151,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
     $localStorage.savedBooks = {};
     $localStorage.numberOfDocuments = {};
     $localStorage.savedBooks = iDex.iDexMapper;
+    $localStorage.indexedBookTitles = iDex.indexedBookTitles;
     $localStorage.numberOfDocuments = iDex.numberOfDocuments;
     toastr.success('All data have been saved to local storage.', 'Success');
   };
@@ -161,6 +163,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
       toastr.warning('All data have been loaded to workspace.', 'Warning');
     } else {
       iDex.iDexMapper = $localStorage.savedBooks;
+      iDex.indexedBookTitles = $localStorage.indexedBookTitles;
+      $scope.indexedBookTitles = iDex.indexedBookTitles;
       iDex.numberOfDocuments = $localStorage.numberOfDocuments;
       $scope.numberOfDocuments = iDex.numberOfDocuments;
       $scope.books = iDex.iDexMapper;
@@ -178,8 +182,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
     } else {
       $localStorage.savedBooks = {};
       iDex.iDexMapper = {};
-      $localStorage.numberOfDocuments = {};
-      iDex.numberOfDocuments = {};
+      $localStorage.indexedBookTitles = {};
+      iDex.indexedBookTitles = {};
       $scope.books = {};
       toastr.warning('All data have been deleted from local storage.', 'Warning');
     }
@@ -192,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bookUploader.addEventListener('change', () => {
     const books = bookUploader.files;
     const booksLength = books.length;
-    angular.element(document.getElementById('book-uploader')).scope().doUpload(books, booksLength, bookUploader);
+    angular.element(document.getElementById('book-uploader'))
+      .scope().doUpload(books, booksLength, bookUploader);
   }, false);
 });
