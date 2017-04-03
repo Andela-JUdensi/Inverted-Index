@@ -1,4 +1,7 @@
 'use strict';
+/**
+ * Class representing InvertedIndex
+ */
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -6,9 +9,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Class representing InvertedIndex
- */
 var InvertedIndex = function () {
 
   /**
@@ -21,6 +21,7 @@ var InvertedIndex = function () {
     this.iDexMapper = {};
     this.numberOfDocuments = {};
     this.unIndexedBooks = {};
+    this.indexedBookTitles = {};
   }
 
   /**
@@ -32,8 +33,35 @@ var InvertedIndex = function () {
 
 
   _createClass(InvertedIndex, [{
-    key: 'createIndex',
+    key: 'setBookTitles',
+    value: function setBookTitles(bookname, title) {
+      if (this.indexedBookTitles[bookname]) {
+        this.indexedBookTitles[bookname].push(title);
+      } else {
+        this.indexedBookTitles[bookname] = [];
+        this.indexedBookTitles[bookname].push(title);
+      }
+    }
 
+    /**
+     * Creates a word array for each document in a book
+     * @param {Object} book - documents in a book
+     * @return {Array.<Object>} bookContents - words in each document
+     */
+
+  }, {
+    key: 'createsArray',
+    value: function createsArray(bookname, book) {
+      var _this = this;
+
+      var bookContents = [];
+      Object.keys(book).map(function (documentPosition) {
+        var mergedTitleAndText = book[documentPosition].title + ' \n      ' + book[documentPosition].text;
+        bookContents.push(InvertedIndex.tokenize(mergedTitleAndText).split(' '));
+        _this.setBookTitles(bookname, book[documentPosition].title);
+      });
+      return bookContents;
+    }
 
     /**
      * Creates the index for specified book
@@ -41,16 +69,19 @@ var InvertedIndex = function () {
      * @param {object} book - document words in specified book
      * @return {Promise.<iDexMapper>} - indexes of specified book
      */
+
+  }, {
+    key: 'createIndex',
     value: function createIndex(bookname, book) {
-      var _this = this;
+      var _this2 = this;
 
       var tokenIndex = {};
       this.numberOfDocuments[bookname] = [];
-      var bookContents = InvertedIndex.createsArray(book);
+      var bookContents = this.createsArray(bookname, book);
       return new Promise(function (resolve) {
         bookContents.map(function (eachdocument, documentPosition) {
           var documentPositionToInt = parseInt(documentPosition, 10);
-          _this.numberOfDocuments[bookname].push(documentPositionToInt);
+          _this2.numberOfDocuments[bookname].push(documentPositionToInt);
           eachdocument.map(function (eachWord) {
             if (tokenIndex[eachWord]) {
               if (tokenIndex[eachWord].indexOf(documentPositionToInt) === -1) {
@@ -61,8 +92,8 @@ var InvertedIndex = function () {
             }
           });
         });
-        _this.iDexMapper[bookname] = tokenIndex;
-        resolve(_this.iDexMapper[bookname]);
+        _this2.iDexMapper[bookname] = tokenIndex;
+        resolve(_this2.iDexMapper[bookname]);
       });
     }
 
@@ -88,7 +119,7 @@ var InvertedIndex = function () {
   }, {
     key: 'searchIndex',
     value: function searchIndex(bookname, tokens) {
-      var _this2 = this;
+      var _this3 = this;
 
       tokens = tokens.split(' ');
       var allBooks = this.iDexMapper;
@@ -96,7 +127,7 @@ var InvertedIndex = function () {
       var searchResult = [];
       if (bookToSearchName === 'allBooks') {
         Object.keys(allBooks).map(function (book) {
-          var search = _this2.getSearchResult(book, tokens);
+          var search = _this3.getSearchResult(book, tokens);
           searchResult.push(search);
         });
       } else {
@@ -165,7 +196,7 @@ var InvertedIndex = function () {
               };
             } else {
               var _index = parseInt(eachIndex, 10) + 1;
-              reject('Document ' + _index + ' in ' + bookname + '.json book do not have a "title" or "text" fields');
+              reject('No \'title\' or \'text\' in Document ' + _index + ' of ' + bookname);
             }
           });
           resolve(bookHolder);
@@ -186,25 +217,6 @@ var InvertedIndex = function () {
       sanitizedText = sanitizedText.replace(/\s\s+/g, ' ');
       sanitizedText = sanitizedText.replace(/^[.\s]+|[.\s]+$/g, '');
       return sanitizedText.toLowerCase();
-    }
-
-    /**
-     * Creates a word array for each document in a book
-     * @param {Object} book - documents in a book
-     * @return {Array.<Object>} bookContents - words in each document
-     */
-
-  }, {
-    key: 'createsArray',
-    value: function createsArray(book) {
-      var _this3 = this;
-
-      var bookContents = [];
-      Object.keys(book).map(function (documentPosition) {
-        var mergedTitleAndText = book[documentPosition].title + ' \n      ' + book[documentPosition].text;
-        bookContents.push(_this3.tokenize(mergedTitleAndText).split(' '));
-      });
-      return bookContents;
     }
   }]);
 
