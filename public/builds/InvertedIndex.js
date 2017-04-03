@@ -55,7 +55,7 @@ const InvertedIndex = class {
             };
           } else {
             const index = parseInt(eachIndex, 10) + 1;
-            reject(`Document ${index} in ${bookname}.json book do not have a "title" or "text" fields`);
+            reject(`No 'title' or 'text' in Document ${index} of ${bookname}`);
           }
         });
         resolve(bookHolder);
