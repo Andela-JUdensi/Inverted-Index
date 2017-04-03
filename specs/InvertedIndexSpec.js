@@ -61,14 +61,14 @@ describe('iDex Inverted Index', () => {
     describe('ensures each document is valid', () => {
       let result = '';
       beforeEach((done) => {
-        InvertedIndex.validateFile(bookBadJson, 'bookBadJson')
+        InvertedIndex.validateFile(bookBadJson, 'bookBadJson.json')
         .catch((error) => {
           result = error;
           done();
         });
       });
       it('should have a `title` and `text` properties', () => {
-        expect(result).toBe('Document 1 in bookBadJson book do not have a "title" or "text" fields');
+        expect(result).toBe('Document 1 in bookBadJson.json book do not have a "title" or "text" fields');
         expect(typeof result).toBe('string');
       });
     });
