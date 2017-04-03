@@ -3,9 +3,10 @@
 const InvertedIndex = require('../public/builds/InvertedIndex').InvertedIndex;
 
 const books = require('../booksamples/books.json');
-const booksInvalidContent = require('../booksamples/books-invalid-content.json');
-const bookBadJson = require('../booksamples/bad.json');
-const bookEmptyJson = require('../booksamples/book-empty.json');
+const booksInvalidContent = require('../booksamples/booksInvalidContent.json');
+const bookBadJson = require('../booksamples/bookBadJson.json');
+const bookEmptyJson = require('../booksamples/bookEmptyJson.json');
+
 const bookText = ' ';
 
 const iDex = new InvertedIndex();
@@ -173,9 +174,9 @@ describe('iDex Inverted Index', () => {
         },
       };
       const expected = [['my', 'cheese', 'knew', 'their', 'edge'], ['times', 'of', 'sciences', 'fly', 'with', 'an', 'edge']];
-      expect(InvertedIndex.createsArray(sentence)).toEqual(expected);
-      expect(typeof InvertedIndex.createsArray(sentence)).toBe('object');
-      expect(Array.isArray(InvertedIndex.createsArray(sentence))).toBeTruthy();
+      expect(iDex.createsArray('bookname', sentence)).toEqual(expected);
+      expect(typeof iDex.createsArray('bookname', sentence)).toBe('object');
+      expect(Array.isArray(iDex.createsArray('bookname', sentence))).toBeTruthy();
     });
   });
 
