@@ -9,6 +9,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
   $scope.iiScopeHolder = {};
   $scope.numberOfDocuments = iDex.numberOfDocuments;
   $scope.books = iDex.unIndexedBooks;
+  $scope.indexedBookTitles = iDex.indexedBookTitles;
   $scope.showIndexes = false;
   $scope.showSearches = false;
 
@@ -121,7 +122,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
   $scope.doSearch = function () {
     if (!$scope.bookToSearch) return Utility.feedback('Select an indexed book before search');
     var searchToken = $scope.searchToken;
-    var searchTokens = iDex.tokenize(searchToken);
+    var searchTokens = InvertedIndex.tokenize(searchToken);
     var bookToSearch = $scope.bookToSearch;
 
     $scope.showSearches = true;
@@ -168,6 +169,7 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
     $localStorage.savedBooks = {};
     $localStorage.numberOfDocuments = {};
     $localStorage.savedBooks = iDex.iDexMapper;
+    $localStorage.indexedBookTitles = iDex.indexedBookTitles;
     $localStorage.numberOfDocuments = iDex.numberOfDocuments;
     toastr.success('All data have been saved to local storage.', 'Success');
   };
@@ -179,6 +181,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
       toastr.warning('All data have been loaded to workspace.', 'Warning');
     } else {
       iDex.iDexMapper = $localStorage.savedBooks;
+      iDex.indexedBookTitles = $localStorage.indexedBookTitles;
+      $scope.indexedBookTitles = iDex.indexedBookTitles;
       iDex.numberOfDocuments = $localStorage.numberOfDocuments;
       $scope.numberOfDocuments = iDex.numberOfDocuments;
       $scope.books = iDex.iDexMapper;
@@ -196,8 +200,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
     } else {
       $localStorage.savedBooks = {};
       iDex.iDexMapper = {};
-      $localStorage.numberOfDocuments = {};
-      iDex.numberOfDocuments = {};
+      $localStorage.indexedBookTitles = {};
+      iDex.indexedBookTitles = {};
       $scope.books = {};
       toastr.warning('All data have been deleted from local storage.', 'Warning');
     }
