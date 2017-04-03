@@ -51,28 +51,24 @@ describe('iDex Inverted Index', () => {
       expect(InvertedIndex.readFile(JSON.stringify(bookEmptyJson))).toEqual((bookEmptyJson));
     });
 
-    it('should return the false if the file cannot be parsed', () => {
+    it('should return false if the file cannot be parsed', () => {
       expect(InvertedIndex.readFile((bookText))).toBe((false));
       expect(InvertedIndex.readFile((bookText))).toBeFalsy();
     });
   });
 
   describe('The validateFile method', () => {
-    describe('each document must have a title and text', () => {
+    describe('ensures each document is valid', () => {
       let result = '';
       beforeEach((done) => {
-        InvertedIndex.validateFile(bookBadJson, 'bookBadJson.json')
-        .then((response) => {
-          result = response;
-          done();
-        })
+        InvertedIndex.validateFile(bookBadJson, 'bookBadJson')
         .catch((error) => {
           result = error;
           done();
         });
       });
       it('should have a `title` and `text` properties', () => {
-        expect(result).toBe('Document 1 in bookBadJson.json book do not have a "title" or "text" fields');
+        expect(result).toBe('Document 1 in bookBadJson book do not have a "title" or "text" fields');
         expect(typeof result).toBe('string');
       });
     });
@@ -81,10 +77,6 @@ describe('iDex Inverted Index', () => {
       let result = '';
       beforeEach((done) => {
         InvertedIndex.validateFile(booksInvalidContent, 'booksInvalidContent.json')
-        .then((response) => {
-          result = response;
-          done();
-        })
         .catch((error) => {
           result = error;
           done();
@@ -100,10 +92,6 @@ describe('iDex Inverted Index', () => {
       let result = '';
       beforeEach((done) => {
         InvertedIndex.validateFile(bookEmptyJson, 'bookEmptyJson.json')
-        .then((response) => {
-          result = response;
-          done();
-        })
         .catch((error) => {
           result = error;
           done();
@@ -122,10 +110,6 @@ describe('iDex Inverted Index', () => {
         .then((response) => {
           result = response;
           done();
-        })
-        .catch((error) => {
-          result = error;
-          done();
         });
       });
       it('both title and text must contain values', () => {
@@ -138,7 +122,7 @@ describe('iDex Inverted Index', () => {
             title: 'the naked ape.',
             text: 'indeed, we have the most subtle and complex facial expression system of all living animals.',
           },
-        }});
+        } });
         expect(typeof result).toBe('object');
       });
     });
@@ -196,10 +180,6 @@ describe('iDex Inverted Index', () => {
       iDex.createIndex('mybook', book)
         .then((response) => {
           result = response;
-          done();
-        })
-        .catch((error) => {
-          result = error;
           done();
         });
     });
