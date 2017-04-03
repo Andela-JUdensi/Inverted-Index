@@ -57,8 +57,8 @@ iDexApp.controller('iicontroller', ['$scope', '$localStorage', 'toastr', 'Utilit
       bookReader.onload = (() => (readerObj) => {
         try {
           const bookname = book.name;
-          const allBooks = iDex.readFile(readerObj.target.result);
-          iDex.validateFile(allBooks, bookname)
+          const allBooks = InvertedIndex.readFile(readerObj.target.result);
+          InvertedIndex.validateFile(allBooks, bookname)
             .then(bookHolder => resolve(bookHolder))
             .catch(error => reject('This is not a valid json file\n Please get one with a vaild title and text properties'));
         } catch (error) {

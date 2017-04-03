@@ -96,10 +96,10 @@ gulp.task('minify', (cb) => {
   ], cb);
 });
 
-gulp.task('test', () => gulp.src(['specs/inverted-index-test.js'])
+gulp.task('test', () => gulp.src(['specs/InvertedIndexSpec.js'])
     .pipe(jasmine()));
 
-gulp.task('coverage', ['unit-test'], () => gulp.src('specs/*.js')
+gulp.task('coverage', () => gulp.src('specs/*.js')
     .pipe(jasmine())
     .pipe(istanbul.writeReports())
     .on('end', () => {
