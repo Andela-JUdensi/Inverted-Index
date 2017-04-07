@@ -9,14 +9,14 @@ const bookEmptyJson = require('../booksamples/bookEmptyJson.json');
 
 const bookText = ' ';
 
-const iDex = new InvertedIndex();
+const invertedIndex = new InvertedIndex();
 
 describe('iDex Inverted Index', () => {
   beforeEach((done) => {
-    iDex.createIndex('books', books);
-    iDex.createIndex('booksInvalidContent', booksInvalidContent);
-    iDex.createIndex('bookBadJson', bookBadJson);
-    iDex.createIndex('bookText', bookText);
+    invertedIndex.createIndex('books', books);
+    invertedIndex.createIndex('booksInvalidContent', booksInvalidContent);
+    invertedIndex.createIndex('bookBadJson', bookBadJson);
+    invertedIndex.createIndex('bookText', bookText);
     done();
   });
   describe('The InvertedIndex class', () => {
@@ -25,20 +25,23 @@ describe('iDex Inverted Index', () => {
     });
 
     it('should have a defined instance', () => {
-      expect(iDex).toBeDefined();
-      expect(iDex instanceof InvertedIndex).toBeTruthy();
+      expect(invertedIndex).toBeDefined();
+      expect(invertedIndex instanceof InvertedIndex).toBeTruthy();
     });
 
     it('should default instance properties to object types', () => {
-      expect(iDex.iDexMapper).toBeDefined();
-      expect(typeof iDex.iDexMapper).toEqual('object');
+      expect(invertedIndex.iDexMapper).toBeDefined();
+      expect(typeof invertedIndex.iDexMapper).toEqual('object');
 
-      expect(iDex.numberOfDocuments).toBeDefined();
-      expect(typeof iDex.numberOfDocuments).toEqual('object');
+      expect(invertedIndex.numberOfDocuments).toBeDefined();
+      expect(typeof invertedIndex.numberOfDocuments).toEqual('object');
 
-      expect(iDex.unIndexedBooks).toBeDefined();
-      expect(iDex.unIndexedBooks).toEqual({});
-      expect(typeof iDex.unIndexedBooks).toEqual('object');
+      expect(invertedIndex.unIndexedBooks).toBeDefined();
+      expect(invertedIndex.unIndexedBooks).toEqual({});
+      expect(typeof invertedIndex.unIndexedBooks).toEqual('object');
+
+      expect(invertedIndex.indexedBookTitles).toBeDefined();
+      expect(typeof invertedIndex.indexedBookTitles).toEqual('object');
     });
   });
 
@@ -151,8 +154,7 @@ describe('iDex Inverted Index', () => {
   });
 
   describe('The createsArray method', () => {
-    it('should return an array of words from ' +
-        'a each document "title" & "text"', () => {
+    it('should return an array of words from a each document "title" & "text"', () => {
       const sentence = {
         0: {
           title: 'my cheese',
@@ -166,10 +168,17 @@ describe('iDex Inverted Index', () => {
       const expected = [['my', 'cheese', 'knew', 'their', 'edge'],
         ['times', 'of', 'sciences', 'fly', 'with', 'an', 'edge']];
 
-      expect(iDex.createsArray('bookname', sentence)).toEqual(expected);
-      expect(typeof iDex.createsArray('bookname', sentence)).toBe('object');
-      expect(Array.isArray(iDex.createsArray('bookname', sentence)))
+      expect(invertedIndex.createsArray('bookname', sentence)).toEqual(expected);
+      expect(typeof invertedIndex.createsArray('bookname', sentence)).toBe('object');
+      expect(Array.isArray(invertedIndex.createsArray('bookname', sentence)))
         .toBeTruthy();
+    });
+  });
+
+  describe('The setBookTitles method', () => {
+    it('should set titles for each book created', () => {
+      expect(invertedIndex.setBookTitles('mybook', 'my book title'))
+        .toEqual(invertedIndex.indexedBookTitles.mybook['my book title']);
     });
   });
 
@@ -186,7 +195,7 @@ describe('iDex Inverted Index', () => {
     };
     let result = '';
     beforeEach((done) => {
-      iDex.createIndex('mybook', book)
+      invertedIndex.createIndex('mybook', book)
         .then((response) => {
           result = response;
           done();
@@ -213,7 +222,7 @@ describe('iDex Inverted Index', () => {
   describe('The getIndex method', () => {
     it('should be able to retreive all indexes of a book already indexed',
       () => {
-        expect(iDex.getIndex('books')).toEqual({
+        expect(invertedIndex.getIndex('books')).toEqual({
           how: [0],
           to: [0],
           read: [0],
@@ -250,22 +259,21 @@ describe('iDex Inverted Index', () => {
 
     it('should be able to retreive all indexes ' +
       ' of a word in a book already indexed', () => {
-
-      expect(iDex.getIndex('books').complex).toEqual([1]);
-      expect(iDex.getIndex('books').rationality).toEqual([0]);
-      expect(iDex.getIndex('books').facial).toEqual([1]);
+      expect(invertedIndex.getIndex('books').complex).toEqual([1]);
+      expect(invertedIndex.getIndex('books').rationality).toEqual([0]);
+      expect(invertedIndex.getIndex('books').facial).toEqual([1]);
     });
 
     it('should return an undefined for unavailable words', () => {
-      expect(iDex.getIndex('books').africa).toBeUndefined();
-      expect(iDex.getIndex('books').andela).toBeUndefined();
-      expect(iDex.getIndex('books').tdd).toBeUndefined();
+      expect(invertedIndex.getIndex('books').africa).toBeUndefined();
+      expect(invertedIndex.getIndex('books').andela).toBeUndefined();
+      expect(invertedIndex.getIndex('books').tdd).toBeUndefined();
     });
   });
 
   describe('The searchIndex method', () => {
     it('should an empty result if no token was searched for', () => {
-      expect(iDex.searchIndex('books', '')).toEqual([{
+      expect(invertedIndex.searchIndex('books', '')).toEqual([{
         books: {
           '': [],
         },
@@ -273,7 +281,7 @@ describe('iDex Inverted Index', () => {
     });
 
     it('should return apropriate result', () => {
-      expect(iDex.searchIndex('books', 'complex read animals')).toEqual([{
+      expect(invertedIndex.searchIndex('books', 'complex read animals')).toEqual([{
         books: {
           complex: [1],
           read: [0],
@@ -284,7 +292,7 @@ describe('iDex Inverted Index', () => {
 
     it('should return apropriate result when ' +
       'searching for multiple files', () => {
-      expect(iDex.searchIndex('allBooks', 'haw animals')).toEqual([
+      expect(invertedIndex.searchIndex('allBooks', 'haw animals')).toEqual([
         {
           books: {
             haw: [],
@@ -318,9 +326,9 @@ describe('iDex Inverted Index', () => {
     });
 
     it('should return false if book name has not been indexed', () => {
-      expect(iDex.searchIndex('unknownBook', 'cheese doughnut'))
+      expect(invertedIndex.searchIndex('unknownBook', 'cheese doughnut'))
         .toEqual([false]);
-      const searchResult = iDex.searchIndex('unknownBook', 'cheese doughnut');
+      const searchResult = invertedIndex.searchIndex('unknownBook', 'cheese doughnut');
       const iterator = searchResult[Symbol.iterator]();
       expect(iterator.next().value).toBeFalsy();
     });
@@ -328,7 +336,7 @@ describe('iDex Inverted Index', () => {
 
   describe('The getSearchResult method', () => {
     it('should return apropriate result', () => {
-      expect(iDex.getSearchResult('books', ['complex', 'read', 'animals']))
+      expect(invertedIndex.getSearchResult('books', ['complex', 'read', 'animals']))
         .toEqual({
           books: {
             complex: [1],
@@ -338,7 +346,7 @@ describe('iDex Inverted Index', () => {
         });
     });
     it('should return false if book name has not been indexed', () => {
-      expect(iDex.getSearchResult('unknownBook', ['cheese', 'doughnut']))
+      expect(invertedIndex.getSearchResult('unknownBook', ['cheese', 'doughnut']))
         .toEqual(false);
     });
   });
