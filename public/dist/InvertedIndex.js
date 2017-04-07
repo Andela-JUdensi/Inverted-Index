@@ -1,7 +1,4 @@
 'use strict';
-/**
- * Class representing InvertedIndex
- */
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -9,6 +6,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+/**
+ * Class representing InvertedIndex
+ */
 var InvertedIndex = function () {
 
   /**
@@ -33,56 +33,66 @@ var InvertedIndex = function () {
 
 
   _createClass(InvertedIndex, [{
-    key: 'setBookTitles',
-    value: function setBookTitles(bookname, title) {
-      if (this.indexedBookTitles[bookname]) {
-        this.indexedBookTitles[bookname].push(title);
-      } else {
-        this.indexedBookTitles[bookname] = [];
-        this.indexedBookTitles[bookname].push(title);
-      }
-    }
+    key: 'createsArray',
+
 
     /**
      * Creates a word array for each document in a book
+     * @param {String} bookName - name of a book to index
      * @param {Object} book - documents in a book
      * @return {Array.<Object>} bookContents - words in each document
      */
-
-  }, {
-    key: 'createsArray',
-    value: function createsArray(bookname, book) {
+    value: function createsArray(bookName, book) {
       var _this = this;
 
       var bookContents = [];
       Object.keys(book).map(function (documentPosition) {
         var mergedTitleAndText = book[documentPosition].title + ' \n      ' + book[documentPosition].text;
         bookContents.push(InvertedIndex.tokenize(mergedTitleAndText).split(' '));
-        _this.setBookTitles(bookname, book[documentPosition].title);
+        _this.setBookTitles(bookName, book[documentPosition].title);
+        return _this;
       });
       return bookContents;
     }
 
     /**
+     * Sets title(s) for a book in an instance variable - indexedBookTitles
+     * @param {String} bookName - name of a book being indexed
+     * @param {String} title - a titlee in the book being indexed
+     * @returns {Void} indexedBookTitles - instance variable
+     */
+
+  }, {
+    key: 'setBookTitles',
+    value: function setBookTitles(bookName, title) {
+      if (this.indexedBookTitles[bookName]) {
+        this.indexedBookTitles[bookName].push(title);
+      } else {
+        this.indexedBookTitles[bookName] = [];
+        this.indexedBookTitles[bookName].push(title);
+      }
+    }
+
+    /**
      * Creates the index for specified book
-     * @param {string} bookname - Name of book to be indexed
+     * @param {string} bookName - Name of book to be indexed
      * @param {object} book - document words in specified book
      * @return {Promise.<iDexMapper>} - indexes of specified book
      */
 
   }, {
     key: 'createIndex',
-    value: function createIndex(bookname, book) {
+    value: function createIndex(bookName, book) {
       var _this2 = this;
 
       var tokenIndex = {};
-      this.numberOfDocuments[bookname] = [];
-      var bookContents = this.createsArray(bookname, book);
+      this.numberOfDocuments[bookName] = [];
+      var bookContents = this.createsArray(bookName, book);
       return new Promise(function (resolve) {
         bookContents.map(function (eachdocument, documentPosition) {
           var documentPositionToInt = parseInt(documentPosition, 10);
-          _this2.numberOfDocuments[bookname].push(documentPositionToInt);
-          eachdocument.map(function (eachWord) {
+          _this2.numberOfDocuments[bookName].push(documentPositionToInt);
+          return eachdocument.map(function (eachWord) {
             if (tokenIndex[eachWord]) {
               if (tokenIndex[eachWord].indexOf(documentPositionToInt) === -1) {
                 tokenIndex[eachWord].push(documentPositionToInt);
@@ -90,45 +100,47 @@ var InvertedIndex = function () {
             } else {
               tokenIndex[eachWord] = [documentPositionToInt];
             }
+            return _this2;
           });
         });
-        _this2.iDexMapper[bookname] = tokenIndex;
-        resolve(_this2.iDexMapper[bookname]);
+        _this2.iDexMapper[bookName] = tokenIndex;
+        resolve(_this2.iDexMapper[bookName]);
       });
     }
 
     /**
      * Get’s indexes created for particular files
-     * @param {String} bookname - name of book to get its indexes
-     * @return {Object.<iDexMapper>} - indexes of specified bookname
+     * @param {String} bookName - name of book to get its indexes
+     * @return {Object.<iDexMapper>} - indexes of specified bookName
      */
 
   }, {
     key: 'getIndex',
-    value: function getIndex(bookname) {
-      return this.iDexMapper[bookname];
+    value: function getIndex(bookName) {
+      return this.iDexMapper[bookName];
     }
 
     /**
      * Searches through one or more indices for words
-     * @param {String} bookname - name of book to search
+     * @param {String} bookName - name of book to search
      * @param {String} tokens - words to search
      * @return {Object.<searchResult>} - words in each book specified
      */
 
   }, {
     key: 'searchIndex',
-    value: function searchIndex(bookname, tokens) {
+    value: function searchIndex(bookName, tokens) {
       var _this3 = this;
 
       tokens = tokens.split(' ');
       var allBooks = this.iDexMapper;
-      var bookToSearchName = bookname;
+      var bookToSearchName = bookName;
       var searchResult = [];
       if (bookToSearchName === 'allBooks') {
         Object.keys(allBooks).map(function (book) {
           var search = _this3.getSearchResult(book, tokens);
           searchResult.push(search);
+          return searchResult;
         });
       } else {
         var search = this.getSearchResult(bookToSearchName, tokens);
@@ -139,22 +151,23 @@ var InvertedIndex = function () {
 
     /**
      * Get search result for the specified book
-     * @param {String} bookname - name of book to search
+     * @param {String} bookName - name of book to search
      * @param {String} tokens - words to search
      * @return {Object<searchResult>} - words in specified books
      */
 
   }, {
     key: 'getSearchResult',
-    value: function getSearchResult(bookname, tokens) {
+    value: function getSearchResult(bookName, tokens) {
       var allBooks = this.iDexMapper;
-      if (!allBooks[bookname]) {
+      if (!allBooks[bookName]) {
         return false;
       }
       var searchResult = {};
-      searchResult[bookname] = {};
+      searchResult[bookName] = {};
       tokens.map(function (word) {
-        searchResult[bookname][word] = allBooks[bookname][word] || [];
+        searchResult[bookName][word] = allBooks[bookName][word] || [];
+        return searchResult;
       });
       return searchResult;
     }
@@ -170,34 +183,37 @@ var InvertedIndex = function () {
 
     /**
      * Ensures all the documents in a particular file is valid
-     * @param {array} allBooks - Array containing document objects of bookname
-     * @param {string} bookname - Name of the book to validate
+     * @param {array} allBooks - Array containing document objects of bookName
+     * @param {string} bookName - Name of the book to validate
      * @return {Promise.<bookHolder>} An Object containing validated book
      */
 
   }, {
     key: 'validateFile',
-    value: function validateFile(allBooks, bookname) {
+    value: function validateFile(allBooks, bookName) {
+      var _this4 = this;
+
       return new Promise(function (resolve, reject) {
         if (Object.keys(allBooks).length < 1) {
           reject('Cannot index an empty object');
         } else {
-          bookname = bookname.split('.')[0];
-          var bookHolder = _defineProperty({}, bookname, {});
+          bookName = bookName.split('.')[0];
+          var bookHolder = _defineProperty({}, bookName, {});
           allBooks.map(function (eachBook, eachIndex) {
             if (Object.prototype.hasOwnProperty.call(eachBook, 'title') && Object.prototype.hasOwnProperty.call(eachBook, 'text')) {
               if (eachBook.title.length < 1 || eachBook.text.length < 1) {
                 var index = parseInt(eachIndex, 10) + 1;
                 reject('Document ' + index + ' have an empty title or text.');
               }
-              bookHolder[bookname][eachIndex] = {
+              bookHolder[bookName][eachIndex] = {
                 title: eachBook.title.toLowerCase(),
                 text: eachBook.text.toLowerCase()
               };
             } else {
               var _index = parseInt(eachIndex, 10) + 1;
-              reject('No \'title\' or \'text\' in Document ' + _index + ' of ' + bookname);
+              reject('No \'title\' or \'text\' in Document ' + _index + ' of ' + bookName);
             }
+            return _this4;
           });
           resolve(bookHolder);
         }
@@ -213,10 +229,7 @@ var InvertedIndex = function () {
   }, {
     key: 'tokenize',
     value: function tokenize(text) {
-      var sanitizedText = text.replace(/[^\w\s]+/gi, '');
-      sanitizedText = sanitizedText.replace(/\s\s+/g, ' ');
-      sanitizedText = sanitizedText.replace(/^[.\s]+|[.\s]+$/g, '');
-      return sanitizedText.toLowerCase();
+      return text.replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim().toLowerCase();
     }
   }]);
 
