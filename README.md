@@ -31,6 +31,7 @@ With the inverted index created, the query can now be resolved by jumping to the
 ]
 ```
 
+
 ###### For Developers
 1. On a local environment, Node.js is required
 
