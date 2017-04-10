@@ -1,5 +1,5 @@
 # Inverted-Index
-[![Build Status](https://travis-ci.org/Andela-JUdensi/Inverted-Index.svg?branch=master)](https://travis-ci.org/Andela-JUdensi/Inverted-Index) [![Code Climate](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/badges/c4aea5cbcf4f3278258b/gpa.svg)](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/feed) [![Issue Count](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/badges/c4aea5cbcf4f3278258b/issue_count.svg)](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/feed) [![CircleCI](https://circleci.com/gh/Andela-JUdensi/inverted-index/tree/master.svg?style=svg)](https://circleci.com/gh/Andela-JUdensi/inverted-index/tree/master) [![Coverage Status](https://coveralls.io/repos/github/Andela-JUdensi/Inverted-Index/badge.svg?branch=review)](https://coveralls.io/github/Andela-JUdensi/Inverted-Index?branch=review) [![Silicon Valley](https://img.shields.io/badge/SiliconValley-100-blue.svg)](https://img.shields.io/badge/SiliconValley-100-blue.svg) [![Deploy](https://www.herokucdn.com/deploy/button.svg)](http://idexii-staging.herokuapp.com/)
+[![Build Status](https://travis-ci.org/Andela-JUdensi/Inverted-Index.svg?branch=master)](https://travis-ci.org/Andela-JUdensi/Inverted-Index) [![Code Climate](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/badges/c4aea5cbcf4f3278258b/gpa.svg)](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/feed) [![Issue Count](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/badges/c4aea5cbcf4f3278258b/issue_count.svg)](https://codeclimate.com/repos/58dd38bc2dc3a00266001047/feed) [![CircleCI](https://circleci.com/gh/Andela-JUdensi/inverted-index/tree/master.svg?style=svg)](https://circleci.com/gh/Andela-JUdensi/inverted-index/tree/master) [![Coverage Status](https://coveralls.io/repos/github/Andela-JUdensi/Inverted-Index/badge.svg?branch=master)](https://coveralls.io/github/Andela-JUdensi/Inverted-Index?branch=master) [![Silicon Valley](https://img.shields.io/badge/SiliconValley-100-blue.svg)](https://img.shields.io/badge/SiliconValley-100-blue.svg) [![Deploy](https://www.herokucdn.com/deploy/button.svg)](http://idexii-staging.herokuapp.com/)
 
 # What is iDex?
 iDex is a web implemtation of **Inverted Index**
@@ -30,6 +30,7 @@ With the inverted index created, the query can now be resolved by jumping to the
   }
 ]
 ```
+
 
 ###### For Developers
 1. On a local environment, Node.js is required

@@ -88,7 +88,6 @@
           <div class="col book-selector">
             <select class="form-control" id="fileTitles" ng-model="selectedBook" ng-change="createIndexButtonText()">
                 <option ng-repeat="bookTitle in bookTitles" value="{{ bookTitle }}">{{ bookTitle }}</option>
-                <option value="allBooks"  ng-if="bookTitles.length > 1"> All Books</option>
               </select>
           </div>
 
